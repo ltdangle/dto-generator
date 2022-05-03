@@ -7,6 +7,7 @@ use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
 use Sodalto\DtoGenerator\Entity\ClassEntity;
 use Sodalto\DtoGenerator\Entity\ClassPropertyEntity;
+use function Psy\sh;
 
 /**
  * Generates array-like data structure.

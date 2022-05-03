@@ -25,7 +25,7 @@ class NameSpaceResolver
 
         $pathWithoutPrefix = substr($path, strlen($psr4Mapping['path']));
 
-        return $psr4Mapping['namespacePrefix'] . '\\' . str_replace('/', '\\', $pathWithoutPrefix);
+        return $psr4Mapping['namespacePrefix'] . str_replace('/', '\\', $pathWithoutPrefix);
     }
 
     private function findPsr4Mapping(string $path): array

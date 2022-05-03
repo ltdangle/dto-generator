@@ -5,7 +5,6 @@ namespace Tests;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Sodalto\DtoGenerator\Service\NameSpaceResolver;
-use Throwable;
 
 class NameSpaceResolverTest extends TestCase
 {

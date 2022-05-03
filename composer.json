@@ -1,0 +1,22 @@
+{
+    "name": "sodalto/dto-generator",
+    "description": "Generate DTOs to be used instead of arrays.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Sodalto\\DtoGenerator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Evgeniy Fedorov",
+            "email": "mailbox@z01d.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "symfony/console": "5.4.0",
+        "nette/php-generator": "v3.6.x-dev"
+    }
+}

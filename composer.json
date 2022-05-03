@@ -5,7 +5,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Sodalto\\DtoGenerator\\": "src/"
+            "Sodalto\\DtoGenerator\\": "src/",
+            "Tests\\": "tests/"
         }
     },
     "authors": [
@@ -18,5 +19,9 @@
     "require": {
         "symfony/console": "5.4.0",
         "nette/php-generator": "v3.6.x-dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9.5.x-dev",
+        "psy/psysh": "@stable"
     }
 }

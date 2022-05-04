@@ -12,12 +12,7 @@ require_once 'vendor/autoload.php';
 $path = 'src/Service';
 $className = 'ArrayItem';
 
-$namespaceResolver = new NameSpaceResolver();
-$composer_json = json_decode(file_get_contents('composer.json'), true);
-
-foreach ($composer_json['autoload']['psr-4'] as $namespacePrefix => $namespacePath) {
-    $namespaceResolver->addPsr4Mapping($namespacePrefix, $namespacePath);
-}
+$namespaceResolver = new NameSpaceResolver(\Composer\InstalledVersions::getRootPackage()['install_path']);
 
 $namespace = $namespaceResolver->path2Namespace($path);
 

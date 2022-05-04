@@ -5,42 +5,63 @@ namespace Sodalto\DtoGenerator\Service\ArrayClass;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
+use Nette\PhpGenerator\PsrPrinter;
+use PhpParser\Node\Name;
 use Sodalto\DtoGenerator\Entity\ClassEntity;
 use Sodalto\DtoGenerator\Entity\ClassPropertyEntity;
+use Sodalto\DtoGenerator\Service\NameSpaceResolver;
 use function Psy\sh;
 
 /**
  * Generates array-like data structure.
  */
-class ArrayItemClassGenerator implements PhpClassGeneratorInterface
+class ArrayItemClassGenerator
 {
-    private ClassEntity $classEntity;
+    private NameSpaceResolver $nameSpaceResolver;
 
-    public function __construct(ClassEntity $classEntity)
+    public function __construct(NameSpaceResolver $nameSpaceResolver)
     {
-        $this->classEntity = $classEntity;
+        $this->nameSpaceResolver = $nameSpaceResolver;
     }
 
-    public function generateFile(): PhpFile
+    public function writeFile(string $path, string $className, array $classProperties)
+    {
+        $namespace = $this->nameSpaceResolver->path2Namespace($path);
+
+        $classEntity = new ClassEntity();
+        $classEntity->setName($className);
+        $classEntity->setNamespace($namespace);
+        $classEntity->setComment('Array item.');
+        foreach ($classProperties as $classProperty) {
+            $classEntity->addClassProperty($classProperty);
+        }
+
+        $file = $this->generateFile($classEntity);
+
+        $printer = new PsrPrinter();
+        file_put_contents("$path/$className.php", $printer->printFile($file));
+    }
+
+    public function generateFile(ClassEntity $classEntity): PhpFile
     {
         $file = new PhpFile();
         $file->setStrictTypes();
 
-        $namespace = new PhpNamespace($this->classEntity->getNamespace());
+        $namespace = new PhpNamespace($classEntity->getNamespace());
 
         $file->addNamespace($namespace);
 
-        $class = $namespace->addClass($this->classEntity->getName());
-        $class->addComment($this->classEntity->getComment());
+        $class = $namespace->addClass($classEntity->getName());
+        $class->addComment($classEntity->getComment());
 
-        $this->_buildClass($class);
+        $this->_buildClass($class, $classEntity);
 
         return $file;
     }
 
-    protected function _buildClass(ClassType $classType)
+    protected function _buildClass(ClassType $classType, ClassEntity $classEntity)
     {
-        foreach ($this->classEntity->getClassProperties() as $classProperty) {
+        foreach ($classEntity->getClassProperties() as $classProperty) {
             // add properties
             $classType->addProperty($classProperty->getPropertyName())->setType($classProperty->getPropertyType());
             // add getters and setters
@@ -52,7 +73,7 @@ class ArrayItemClassGenerator implements PhpClassGeneratorInterface
 
     protected function _addSetter(ClassPropertyEntity $classProperty, ClassType $classType)
     {
-        $method=$classType
+        $method = $classType
             ->addMethod('set' . ucfirst($classProperty->getPropertyName()))
             ->addBody('$this->' . $classProperty->getPropertyName() . '=$' . $classProperty->getPropertyName() . ';')
             ->setReturnType($classProperty->getPropertyType());

@@ -15,15 +15,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
-use function Psy\sh;
 
 class GenerateDtoCommand extends Command
 {
     protected static $defaultName = 'generate:dto-array';
+    private ArrayItemClassGenerator $arrayItemClassGenerator;
 
-    public function __construct(string $name = null)
+    public function __construct(ArrayItemClassGenerator $arrayItemClassGenerator, string $name = null)
     {
         parent::__construct($name);
+        $this->arrayItemClassGenerator = $arrayItemClassGenerator;
     }
 
     protected function configure(): void
@@ -42,42 +43,15 @@ class GenerateDtoCommand extends Command
         $wrapperClassName = $input->getArgument('className');
         $itemClassName = $wrapperClassName . 'Item';
 
-        $classProperties = $this->collectClassProperties($input, $output);
+        $arrayProperties = $this->collectClassProperties($input, $output);
 
         if (!$questionHelper->ask($input, $output, new ConfirmationQuestion('Generate? ', true))) {
             return Command::FAILURE;
         }
 
-        $this->generateItemClassFile($classPath, $itemClassName, $classProperties);
+        $this->arrayItemClassGenerator->writeFile($classPath, $itemClassName, $arrayProperties);
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * @param ClassPropertyEntity[] $classProperties
-     */
-    protected function generateItemClassFile(string $path, string $className, array $classProperties)
-    {
-        $namespaceResolver = new NameSpaceResolver(realpath(\Composer\InstalledVersions::getRootPackage()['install_path']));
-
-        $namespace = $namespaceResolver->path2Namespace($path);
-
-        $classEntity = new ClassEntity();
-        $classEntity->setName($className);
-        $classEntity->setNamespace($namespace);
-        $classEntity->setComment('Array item.');
-        foreach ($classProperties as $classProperty) {
-            $classEntity->addClassProperty($classProperty);
-        }
-        $service = new ArrayItemClassGenerator($classEntity);
-
-        $file = $service->generateFile();
-
-        $printer = new PsrPrinter();
-        eval(sh());
-        file_put_contents("$path/$className.php", $printer->printFile($file));
-
-
     }
 
     /**

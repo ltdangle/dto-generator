@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Sodalto\DtoGenerator\Service;
+namespace Sodalto\DtoGenerator\Service\ArrayClass;
 
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
@@ -12,7 +12,7 @@ use function Psy\sh;
 /**
  * Generates array-like data structure.
  */
-class ArrayItemGenerator
+class ArrayItemClassGenerator implements PhpClassGeneratorInterface
 {
     private ClassEntity $classEntity;
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace MyNamespace;
+namespace Tests;
 
 /**
  * Array item.
  */
-class MyTestClass
+class ArrayItem
 {
     public \DateTime $one;
     public string $two;

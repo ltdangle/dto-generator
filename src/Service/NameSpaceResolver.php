@@ -8,6 +8,19 @@ use function Psy\sh;
 class NameSpaceResolver
 {
     private array $psr4;
+    private string $composerInstallPath;
+
+    public function __construct(string $composerInstallPath)
+    {
+        $this->composerInstallPath = $composerInstallPath;
+
+        $composer_json = json_decode(file_get_contents($this->composerInstallPath.'/composer.json'), true);
+
+        foreach ($composer_json['autoload']['psr-4'] as $namespacePrefix => $namespacePath) {
+            $this->addPsr4Mapping($namespacePrefix, $namespacePath);
+        }
+
+    }
 
     public function addPsr4Mapping(string $namespacePrefix, string $path)
     {

@@ -9,14 +9,15 @@ use Nette\PhpGenerator\PhpNamespace;
  */
 class ClassEntity
 {
+    private string $path = '';
     private string $name = '';
+    private string $namespace = '';
     private string $comment = '';
 
     /**
      * @var ClassPropertyEntity[]
      */
     private array $classProperties = [];
-    private string $namespace = '';
 
     public function getName()
     {
@@ -56,6 +57,16 @@ class ClassEntity
     public function setComment(string $comment): void
     {
         $this->comment = $comment;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
     }
 
 }

@@ -49,7 +49,13 @@ class GenerateDtoCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->arrayItemClassGenerator->writeFile($classPath, $itemClassName, $arrayProperties);
+        $classEntity = new ClassEntity();
+        $classEntity->setPath($classPath);
+        $classEntity->setName($itemClassName);
+        foreach ($arrayProperties as $classProperty) {
+            $classEntity->addClassProperty($classProperty);
+        }
+        $this->arrayItemClassGenerator->generateFile($classEntity);
 
         return Command::SUCCESS;
     }

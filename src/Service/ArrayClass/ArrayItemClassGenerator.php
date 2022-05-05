@@ -24,26 +24,15 @@ class ArrayItemClassGenerator
         $this->nameSpaceResolver = $nameSpaceResolver;
     }
 
-    public function writeFile(string $path, string $className, array $classProperties)
+    public function generateFile(ClassEntity $classEntity)
     {
-        $namespace = $this->nameSpaceResolver->path2Namespace($path);
-
-        $classEntity = new ClassEntity();
-        $classEntity->setName($className);
+        $namespace = $this->nameSpaceResolver->path2Namespace($classEntity->getPath());
         $classEntity->setNamespace($namespace);
         $classEntity->setComment('Array item.');
-        foreach ($classProperties as $classProperty) {
+        foreach ($classEntity->getClassProperties() as $classProperty) {
             $classEntity->addClassProperty($classProperty);
         }
 
-        $file = $this->generateFile($classEntity);
-
-        $printer = new PsrPrinter();
-        file_put_contents("$path/$className.php", $printer->printFile($file));
-    }
-
-    public function generateFile(ClassEntity $classEntity): PhpFile
-    {
         $file = new PhpFile();
         $file->setStrictTypes();
 
@@ -56,7 +45,8 @@ class ArrayItemClassGenerator
 
         $this->_buildClass($class, $classEntity);
 
-        return $file;
+        $printer = new PsrPrinter();
+        file_put_contents("{$classEntity->getPath()}/{$classEntity->getName()}.php", $printer->printFile($file));
     }
 
     protected function _buildClass(ClassType $classType, ClassEntity $classEntity)

@@ -22,6 +22,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "9.5.x-dev",
-        "psy/psysh": "@stable"
+        "psy/psysh": "@stable",
+        "phpstan/phpstan": "1.7.x-dev"
     }
 }

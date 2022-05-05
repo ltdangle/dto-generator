@@ -7,6 +7,7 @@ namespace Sodalto\DtoGenerator\Commands;
 use Sodalto\DtoGenerator\Entity\ClassEntity;
 use Sodalto\DtoGenerator\Entity\ClassPropertyEntity;
 use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClass\ArrayItemClassGenerator;
+use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClass\ArrayWrapperClassGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,11 +19,13 @@ class GenerateArrayClassCommand extends Command
 {
     protected static $defaultName = 'generate:dto-array';
     private ArrayItemClassGenerator $arrayItemClassGenerator;
+    private ArrayWrapperClassGenerator $arrayWrapperClassGenerator;
 
-    public function __construct(ArrayItemClassGenerator $arrayItemClassGenerator, string $name = null)
+    public function __construct(ArrayItemClassGenerator $arrayItemClassGenerator, ArrayWrapperClassGenerator $arrayWrapperClassGenerator, string $name = null)
     {
         parent::__construct($name);
         $this->arrayItemClassGenerator = $arrayItemClassGenerator;
+        $this->arrayWrapperClassGenerator = $arrayWrapperClassGenerator;
     }
 
     protected function configure(): void
@@ -47,13 +50,23 @@ class GenerateArrayClassCommand extends Command
             return Command::FAILURE;
         }
 
-        $classEntity = new ClassEntity();
-        $classEntity->setPath($classPath);
-        $classEntity->setName($itemClassName);
+        // generate array item class
+        $itemClassEntity = new ClassEntity();
+        $itemClassEntity->setClassComment("$wrapperClassName item.");
+        $itemClassEntity->setPath($classPath);
+        $itemClassEntity->setName($itemClassName);
         foreach ($arrayProperties as $classProperty) {
-            $classEntity->addClassProperty($classProperty);
+            $itemClassEntity->addClassProperty($classProperty);
         }
-        $this->arrayItemClassGenerator->generateFile($classEntity);
+        $this->arrayItemClassGenerator->generateFile($itemClassEntity);
+
+        // generate array wrapper class
+        $wrapperClassEntity = new ClassEntity();
+        $wrapperClassEntity->setClassComment("$wrapperClassName array-like structure.");
+        $wrapperClassEntity->setPath($classPath);
+        $wrapperClassEntity->setName($wrapperClassName);
+        $wrapperClassEntity->addClassProperty(new ClassPropertyEntity('items','array'));
+        $this->arrayWrapperClassGenerator->generateFile($wrapperClassEntity);
 
         return Command::SUCCESS;
     }

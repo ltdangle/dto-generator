@@ -19,7 +19,7 @@ $application->run();
 function buildNameSpaceResolver(): NameSpaceResolver
 {
     $namespaceResolver = new NameSpaceResolver();
-    $composer_json = json_decode(file_get_contents(realpath(\Composer\InstalledVersions::getRootPackage()['install_path']) . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
+    $composer_json = json_decode(file_get_contents(realpath(\Composer\InstalledVersions::getRootPackage()['install_path']).'/composer.json'), true, 512, JSON_THROW_ON_ERROR);
 
     foreach ($composer_json['autoload']['psr-4'] as $namespacePrefix => $namespacePath) {
         $namespaceResolver->addPsr4Mapping($namespacePrefix, $namespacePath);

@@ -65,7 +65,7 @@ class GenerateArrayClassCommand extends Command
         $wrapperClassEntity->setClassComment("$wrapperClassName array-like structure.");
         $wrapperClassEntity->setPath($classPath);
         $wrapperClassEntity->setName($wrapperClassName);
-        $wrapperClassEntity->addClassProperty(new ClassPropertyEntity('items','array'));
+        $wrapperClassEntity->addClassProperty(new ClassPropertyEntity('items', 'array'));
         $this->arrayWrapperClassGenerator->generateFile($wrapperClassEntity);
 
         return Command::SUCCESS;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sodalto\DtoGenerator\Service\NewClassGenerator;
+namespace Sodalto\DtoGenerator\Service\ClassGenerator;
 
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
@@ -11,12 +11,13 @@ use Nette\PhpGenerator\Property;
 use Nette\PhpGenerator\PsrPrinter;
 use Sodalto\DtoGenerator\Service\NameSpaceResolver;
 
-class ArrayClassFilesGenerator
+class ArrayClassGenerator
 {
     protected NameSpaceResolver $nameSpaceResolver;
 
     protected string $path;
-    protected string $className;
+    protected string $wrapperClassName;
+    protected string $itemClassName;
     /** @param Property[] $classProperties */
     protected array $classProperties;
 
@@ -25,19 +26,24 @@ class ArrayClassFilesGenerator
         $this->nameSpaceResolver = $nameSpaceResolver;
     }
 
-    public function generateArrayWrapperClass()
+    public function generateClasses(){
+        $this->_generateItemClass();
+        $this->_generateArrayWrapperClass();
+    }
+
+    public function _generateArrayWrapperClass()
     {
         $file = new PhpFile();
         $file->setStrictTypes();
         $namespace = new PhpNamespace($this->nameSpaceResolver->path2Namespace($this->path));
         $file->addNamespace($namespace);
 
-        $class = $namespace->addClass($this->className);
-        $class->addComment("{$this->className} array-like data structure.");
+        $class = $namespace->addClass($this->wrapperClassName);
+        $class->addComment("{$this->wrapperClassName} array-like data structure.");
 
         $items = new Property('items');
         $items->setType('array');
-        $items->addComment("@var {$this->className}Item[]");
+        $items->addComment("@var {$this->itemClassName}[]");
         $class->addMember($items);
 
         // add getter
@@ -48,21 +54,21 @@ class ArrayClassFilesGenerator
             ->addBody('$this->'.$items->getName().'[] = $item;')
             ->setReturnType('void');
 
-        $method->addParameter('item')->setType($namespace->getName().'\\'."{$this->className}Item");
+        $method->addParameter('item')->setType($namespace->getName().'\\'."$this->itemClassName");
 
         $printer = new PsrPrinter();
-        file_put_contents("{$this->getPath()}/{$this->getClassName()}.php", $printer->printFile($file));
+        file_put_contents("{$this->getPath()}/{$this->getWrapperClassName()}.php", $printer->printFile($file));
     }
 
-    public function generateItemClass()
+    public function _generateItemClass()
     {
         $file = new PhpFile();
         $file->setStrictTypes();
         $namespace = new PhpNamespace($this->nameSpaceResolver->path2Namespace($this->path));
         $file->addNamespace($namespace);
 
-        $class = $namespace->addClass($this->className.'Item');
-        $class->addComment("{$this->className} item.");
+        $class = $namespace->addClass($this->itemClassName);
+        $class->addComment("{$this->wrapperClassName} item.");
 
         foreach ($this->getClassProperties() as $classProperty) {
             // add properties
@@ -75,10 +81,10 @@ class ArrayClassFilesGenerator
 
         $printer = new PsrPrinter();
 
-        file_put_contents("{$this->getPath()}/{$this->getClassName()}Item.php", $printer->printFile($file));
+        file_put_contents("{$this->getPath()}/{$this->itemClassName}.php", $printer->printFile($file));
     }
 
-    protected function _addSetter(Property $property, ClassType $classType): void
+    private function _addSetter(Property $property, ClassType $classType): void
     {
         $method = $classType
             ->addMethod('set'.ucfirst($property->getName()))
@@ -88,7 +94,7 @@ class ArrayClassFilesGenerator
         $method->addParameter($property->getName())->setType($property->getType());
     }
 
-    protected function _addGetter(Property $property, ClassType $classType): void
+    private function _addGetter(Property $property, ClassType $classType): void
     {
         $classType->addMethod('get'.ucfirst($property->getName()))
             ->addBody('return $this->'.$property->getName().';')
@@ -105,14 +111,15 @@ class ArrayClassFilesGenerator
         $this->path = $path;
     }
 
-    public function getClassName(): string
+    public function getWrapperClassName(): string
     {
-        return $this->className;
+        return $this->wrapperClassName;
     }
 
-    public function setClassName(string $className): void
+    public function setWrapperClassName(string $wrapperClassName): void
     {
-        $this->className = $className;
+        $this->wrapperClassName = $wrapperClassName;
+        $this->itemClassName = $wrapperClassName.'Item';
     }
 
     public function getClassProperties(): array
@@ -120,6 +127,7 @@ class ArrayClassFilesGenerator
         return $this->classProperties;
     }
 
+    /** @param Property[] $classProperties */
     public function setClassProperties(array $classProperties): void
     {
         $this->classProperties = $classProperties;

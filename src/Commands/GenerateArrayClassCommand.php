@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Sodalto\DtoGenerator\Commands;
 
-use Sodalto\DtoGenerator\Entity\ClassEntity;
-use Sodalto\DtoGenerator\Entity\ClassPropertyEntity;
-use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClass\ArrayItemClassGenerator;
-use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClass\ArrayWrapperClassGenerator;
+use Nette\PhpGenerator\Property;
+use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClassGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,61 +16,43 @@ use Symfony\Component\Console\Question\Question;
 class GenerateArrayClassCommand extends Command
 {
     protected static $defaultName = 'generate:dto-array';
-    private ArrayItemClassGenerator $arrayItemClassGenerator;
-    private ArrayWrapperClassGenerator $arrayWrapperClassGenerator;
+    private ArrayClassGenerator $classGenerator;
 
-    public function __construct(ArrayItemClassGenerator $arrayItemClassGenerator, ArrayWrapperClassGenerator $arrayWrapperClassGenerator, string $name = null)
+    public function __construct(ArrayClassGenerator $classGenerator, string $name = null)
     {
         parent::__construct($name);
-        $this->arrayItemClassGenerator = $arrayItemClassGenerator;
-        $this->arrayWrapperClassGenerator = $arrayWrapperClassGenerator;
+        $this->classGenerator = $classGenerator;
     }
 
     protected function configure(): void
     {
         $this
             ->setDescription('Generate array-like data structure.')
-            ->addArgument('classPath', InputArgument::REQUIRED, 'classPath')
-            ->addArgument('className', InputArgument::REQUIRED, 'className');
+            ->addArgument('path', InputArgument::REQUIRED, 'Path to generated classes.')
+            ->addArgument('className', InputArgument::REQUIRED, 'Array class name.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $questionHelper = $this->getHelper('question');
-
-        $classPath = $input->getArgument('classPath');
+        $path = $input->getArgument('path');
         $wrapperClassName = $input->getArgument('className');
-        $itemClassName = $wrapperClassName.'Item';
-
-        $arrayProperties = $this->collectClassProperties($input, $output);
+        $classProperties = $this->collectClassProperties($input, $output);
 
         if (!$questionHelper->ask($input, $output, new ConfirmationQuestion('Generate? ', true))) {
             return Command::FAILURE;
         }
 
-        // generate array item class
-        $itemClassEntity = new ClassEntity();
-        $itemClassEntity->setClassComment("$wrapperClassName item.");
-        $itemClassEntity->setPath($classPath);
-        $itemClassEntity->setName($itemClassName);
-        foreach ($arrayProperties as $classProperty) {
-            $itemClassEntity->addClassProperty($classProperty);
-        }
-        $this->arrayItemClassGenerator->generateFile($itemClassEntity);
-
-        // generate array wrapper class
-        $wrapperClassEntity = new ClassEntity();
-        $wrapperClassEntity->setClassComment("$wrapperClassName array-like structure.");
-        $wrapperClassEntity->setPath($classPath);
-        $wrapperClassEntity->setName($wrapperClassName);
-        $wrapperClassEntity->addClassProperty(new ClassPropertyEntity('items', 'array'));
-        $this->arrayWrapperClassGenerator->generateFile($wrapperClassEntity);
+        $this->classGenerator->setPath($path);
+        $this->classGenerator->setClassProperties($classProperties);
+        $this->classGenerator->setWrapperClassName($wrapperClassName);
+        $this->classGenerator->generateClasses();
 
         return Command::SUCCESS;
     }
 
     /**
-     * @return ClassPropertyEntity[]
+     * @return Property[]
      */
     protected function collectClassProperties(InputInterface $input, OutputInterface $output): array
     {
@@ -85,7 +65,9 @@ class GenerateArrayClassCommand extends Command
             $question = new Question('Property type: ');
             $propertyType = $helper->ask($input, $output, $question);
 
-            $classProperties[] = new ClassPropertyEntity($propertyName, $propertyType);
+            $property = new Property($propertyName);
+            $property->setType($propertyType);
+            $classProperties[] = $property;
 
             // confirm to add new property?
             $output->writeln('');

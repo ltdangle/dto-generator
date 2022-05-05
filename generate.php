@@ -5,15 +5,14 @@ require_once 'vendor/autoload.php';
 use Sodalto\DtoGenerator\Commands\GenerateArrayClassCommand;
 use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClass\ArrayItemClassGenerator;
 use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClass\ArrayWrapperClassGenerator;
+use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClassGenerator;
 use Sodalto\DtoGenerator\Service\NameSpaceResolver;
 use Symfony\Component\Console\Application;
 
 $application = new Application('Generate DTOs for array data structures.', '0.0.1');
 
-$arrayItemClassGenerator = new ArrayItemClassGenerator(buildNameSpaceResolver());
-$arrayWrapperClassGenerator = new ArrayWrapperClassGenerator(buildNameSpaceResolver());
-
-$application->add(new GenerateArrayClassCommand($arrayItemClassGenerator, $arrayWrapperClassGenerator));
+$classGenerator = new ArrayClassGenerator(buildNameSpaceResolver());
+$application->add(new GenerateArrayClassCommand($classGenerator));
 $application->run();
 
 function buildNameSpaceResolver(): NameSpaceResolver

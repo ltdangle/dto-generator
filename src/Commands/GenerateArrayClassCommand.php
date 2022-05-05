@@ -1,14 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sodalto\DtoGenerator\Commands;
 
-use Nette\PhpGenerator\ClassType;
-use Nette\PhpGenerator\PhpFile;
-use Nette\PhpGenerator\PsrPrinter;
 use Sodalto\DtoGenerator\Entity\ClassEntity;
 use Sodalto\DtoGenerator\Entity\ClassPropertyEntity;
-use Sodalto\DtoGenerator\Service\ArrayClass\ArrayItemClassGenerator;
-use Sodalto\DtoGenerator\Service\NameSpaceResolver;
+use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClass\ArrayItemClassGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class GenerateDtoCommand extends Command
+class GenerateArrayClassCommand extends Command
 {
     protected static $defaultName = 'generate:dto-array';
     private ArrayItemClassGenerator $arrayItemClassGenerator;
@@ -41,7 +39,7 @@ class GenerateDtoCommand extends Command
 
         $classPath = $input->getArgument('classPath');
         $wrapperClassName = $input->getArgument('className');
-        $itemClassName = $wrapperClassName . 'Item';
+        $itemClassName = $wrapperClassName.'Item';
 
         $arrayProperties = $this->collectClassProperties($input, $output);
 
@@ -85,5 +83,4 @@ class GenerateDtoCommand extends Command
             }
         }
     }
-
 }

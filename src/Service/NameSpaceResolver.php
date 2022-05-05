@@ -1,9 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sodalto\DtoGenerator\Service;
 
 use InvalidArgumentException;
-use function Psy\sh;
 
 class NameSpaceResolver
 {
@@ -25,13 +26,13 @@ class NameSpaceResolver
 
         $pathWithoutPrefix = substr($path, strlen($psr4Mapping['path']));
 
-        return $psr4Mapping['namespacePrefix'] . str_replace('/', '\\', $pathWithoutPrefix);
+        return $psr4Mapping['namespacePrefix'].str_replace('/', '\\', $pathWithoutPrefix);
     }
 
     private function findPsr4Mapping(string $path): array
     {
         foreach ($this->psr4 as $item) {
-            if (strpos($path, $item['path']) === 0) {
+            if (0 === strpos($path, $item['path'])) {
                 return $item;
             }
         }
@@ -39,12 +40,12 @@ class NameSpaceResolver
     }
 
     /**
-     * Check that $dir is among registered namespace prefixes
+     * Check that $dir is among registered namespace prefixes.
      */
     private function checkIfPsr4Autoloaded(string $path)
     {
         foreach ($this->psr4 as $item) {
-            if (strpos($path, $item['path']) === 0) {
+            if (0 === strpos($path, $item['path'])) {
                 return;
             }
         }

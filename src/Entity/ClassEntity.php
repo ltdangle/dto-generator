@@ -1,8 +1,8 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sodalto\DtoGenerator\Entity;
-
-use Nette\PhpGenerator\PhpNamespace;
 
 /**
  * Entity representing php class.
@@ -12,7 +12,7 @@ class ClassEntity
     private string $path = '';
     private string $name = '';
     private string $namespace = '';
-    private string $comment = '';
+    private string $classComment = '';
 
     /**
      * @var ClassPropertyEntity[]
@@ -49,14 +49,14 @@ class ClassEntity
         $this->namespace = $namespace;
     }
 
-    public function getComment(): string
+    public function getClassComment(): string
     {
-        return $this->comment;
+        return $this->classComment;
     }
 
-    public function setComment(string $comment): void
+    public function setClassComment(string $classComment): void
     {
-        $this->comment = $comment;
+        $this->classComment = $classComment;
     }
 
     public function getPath(): string
@@ -68,5 +68,4 @@ class ClassEntity
     {
         $this->path = $path;
     }
-
 }

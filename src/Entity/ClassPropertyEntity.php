@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sodalto\DtoGenerator\Entity;
 
@@ -35,5 +37,4 @@ class ClassPropertyEntity
     {
         $this->propertyType = $propertyType;
     }
-
 }

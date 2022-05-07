@@ -6,6 +6,7 @@ namespace Sodalto\DtoGenerator\Commands;
 
 use Nette\PhpGenerator\Property;
 use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClassGenerator;
+use Sodalto\DtoGenerator\Service\NameSpaceResolver;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,6 +37,8 @@ class GenerateArrayClassCommand extends Command
     {
         $questionHelper = $this->getHelper('question');
         $path = $input->getArgument('path');
+        NameSpaceResolver::validatePath($path);
+
         $wrapperClassName = $input->getArgument('className');
         $classProperties = $this->collectClassProperties($input, $output);
 

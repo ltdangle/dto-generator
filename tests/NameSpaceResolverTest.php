@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace Tests;
 
 use InvalidArgumentException;
+use PhpParser\Node\Name;
 use PHPUnit\Framework\TestCase;
 use Sodalto\DtoGenerator\Service\NameSpaceResolver;
 
 class NameSpaceResolverTest extends TestCase
 {
-    public function testItThrowsErrorOnInvalidPath()
+    public function test_it_throws_error_on_invalid_path(){
+        $this->expectException(InvalidArgumentException::class);
+        NameSpaceResolver::validatePath('src');
+    }
+
+    public function test_it_throws_error_on_unconfigured_path(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -20,11 +26,17 @@ class NameSpaceResolverTest extends TestCase
         $resolver->path2Namespace('some/path');
     }
 
-    public function testPath2namespace()
+    public function test_deep_namespace(): void
     {
         $resolver = new NameSpaceResolver();
-        $nameSpacePrefix = 'My\\Name\\Space\\';
-        $resolver->addPsr4Mapping($nameSpacePrefix, 'src/');
-        $this->assertEquals("$nameSpacePrefix".'dir1\\Dir2\\Dir3', $resolver->path2Namespace('src/dir1/Dir2/Dir3'));
+        $resolver->addPsr4Mapping('My\\Name\\Space\\', 'src/');
+        $this->assertEquals("My\\Name\\Space\\dir1\\Dir2\\Dir3", $resolver->path2Namespace('src/dir1/Dir2/Dir3'));
+    }
+
+    public function test_top_level_namespace(): void
+    {
+        $resolver = new NameSpaceResolver();
+        $resolver->addPsr4Mapping('My\\Name\\Space\\', 'src/');
+        $this->assertEquals('My\\Name\\Space', $resolver->path2Namespace('src/'));
     }
 }

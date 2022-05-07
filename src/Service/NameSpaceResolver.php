@@ -12,6 +12,8 @@ class NameSpaceResolver
 
     public function addPsr4Mapping(string $namespacePrefix, string $path)
     {
+        self::validatePath($path);
+
         $this->psr4[] = ['namespacePrefix' => $namespacePrefix, 'path' => $path];
     }
 
@@ -26,7 +28,9 @@ class NameSpaceResolver
 
         $pathWithoutPrefix = substr($path, strlen($psr4Mapping['path']));
 
-        return $psr4Mapping['namespacePrefix'].str_replace('/', '\\', $pathWithoutPrefix);
+        $namespace = rtrim($psr4Mapping['namespacePrefix'] . str_replace('/', '\\', $pathWithoutPrefix), '\\');
+
+        return $namespace;
     }
 
     private function findPsr4Mapping(string $path): array
@@ -50,5 +54,12 @@ class NameSpaceResolver
             }
         }
         throw new InvalidArgumentException("$path is not registered under psr-4 mappings");
+    }
+
+    public static function validatePath(string $path)
+    {
+        if (strpos($path, "/") === false) {
+            throw new InvalidArgumentException("Path must have at least one forward slash. I.e. 'src/' ");
+        }
     }
 }

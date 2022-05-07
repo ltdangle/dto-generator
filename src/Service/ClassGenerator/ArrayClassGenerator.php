@@ -26,12 +26,13 @@ class ArrayClassGenerator
         $this->nameSpaceResolver = $nameSpaceResolver;
     }
 
-    public function generateClasses(){
-        $this->_generateItemClass();
-        $this->_generateArrayWrapperClass();
+    public function writeClasses()
+    {
+        $this->generateItemClass();
+        $this->generateArrayWrapperClass();
     }
 
-    public function _generateArrayWrapperClass()
+    public function generateArrayWrapperClass()
     {
         $file = new PhpFile();
         $file->setStrictTypes();
@@ -60,7 +61,7 @@ class ArrayClassGenerator
         file_put_contents("{$this->getPath()}/{$this->getWrapperClassName()}.php", $printer->printFile($file));
     }
 
-    public function _generateItemClass()
+    public function generateItemClass()
     {
         $file = new PhpFile();
         $file->setStrictTypes();

@@ -28,7 +28,7 @@ class NameSpaceResolver
 
         $pathWithoutPrefix = substr($path, strlen($psr4Mapping['path']));
 
-        $namespace = rtrim($psr4Mapping['namespacePrefix'] . str_replace('/', '\\', $pathWithoutPrefix), '\\');
+        $namespace = rtrim($psr4Mapping['namespacePrefix'].str_replace('/', '\\', $pathWithoutPrefix), '\\');
 
         return $namespace;
     }
@@ -58,7 +58,7 @@ class NameSpaceResolver
 
     public static function validatePath(string $path)
     {
-        if (strpos($path, "/") === false) {
+        if (false === strpos($path, '/')) {
             throw new InvalidArgumentException("Path must have at least one forward slash. I.e. 'src/' ");
         }
     }

@@ -3,8 +3,6 @@
 require_once 'vendor/autoload.php';
 
 use Sodalto\DtoGenerator\Commands\GenerateArrayClassCommand;
-use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClass\ArrayItemClassGenerator;
-use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClass\ArrayWrapperClassGenerator;
 use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClassGenerator;
 use Sodalto\DtoGenerator\Service\NameSpaceResolver;
 use Symfony\Component\Console\Application;

@@ -8,6 +8,7 @@ use Nette\PhpGenerator\Property;
 use Sodalto\DtoGenerator\Service\ClassGenerator\ArrayClassGenerator;
 use Sodalto\DtoGenerator\Service\NameSpaceResolver;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -49,7 +50,7 @@ class GenerateArrayClassCommand extends Command
         $this->classGenerator->setPath($path);
         $this->classGenerator->setClassProperties($classProperties);
         $this->classGenerator->setWrapperClassName($wrapperClassName);
-        $this->classGenerator->generateClasses();
+        $this->classGenerator->writeClasses();
 
         return Command::SUCCESS;
     }
@@ -68,17 +69,40 @@ class GenerateArrayClassCommand extends Command
             $question = new Question('Property type: ');
             $propertyType = $helper->ask($input, $output, $question);
 
+            $question = new Question('Property comment: ');
+            $propertyComment = $helper->ask($input, $output, $question);
+
             $property = new Property($propertyName);
             $property->setType($propertyType);
+            $property->setComment($propertyComment);
+
             $classProperties[] = $property;
 
             // confirm to add new property?
             $output->writeln('');
+
+            $this->_displayCollectedProperties($classProperties, $output);
+
             $continue = new ConfirmationQuestion('Add another class property? ', true);
 
             if (!$helper->ask($input, $output, $continue)) {
                 return $classProperties;
             }
         }
+    }
+
+    /**
+     * @param Property[] $properties
+     */
+    protected function _displayCollectedProperties(array $properties, OutputInterface $output)
+    {
+        $table = new Table($output);
+        $table->setHeaders(['name', 'type', 'comment']);
+
+        foreach ($properties as $property) {
+            $table->addRow([$property->getName(), $property->getType(), $property->getComment()]);
+        }
+
+        $table->render();
     }
 }

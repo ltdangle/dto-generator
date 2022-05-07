@@ -9,30 +9,30 @@ use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
 use Nette\PhpGenerator\Property;
 use Nette\PhpGenerator\PsrPrinter;
+use Sodalto\DtoGenerator\Service\ClassGenerator\DTO\ArrayClassGeneratorResult;
 use Sodalto\DtoGenerator\Service\NameSpaceResolver;
 
 class ArrayClassGenerator
 {
     protected NameSpaceResolver $nameSpaceResolver;
 
-    protected string $path;
-    protected string $wrapperClassName;
-    protected string $itemClassName;
+    protected string $path = '';
+    protected string $wrapperClassName = '';
+    protected string $itemClassName = '';
     /** @param Property[] $classProperties */
-    protected array $classProperties;
+    protected array $classProperties = [];
 
     public function __construct(NameSpaceResolver $nameSpaceResolver)
     {
         $this->nameSpaceResolver = $nameSpaceResolver;
     }
 
-    public function writeClasses()
+    public function writeClasses(): ArrayClassGeneratorResult
     {
-        $this->generateItemClass();
-        $this->generateArrayWrapperClass();
+        return new ArrayClassGeneratorResult($this->generateItemClass(), $this->generateArrayWrapperClass());
     }
 
-    public function generateArrayWrapperClass()
+    public function generateArrayWrapperClass(): string
     {
         $file = new PhpFile();
         $file->setStrictTypes();
@@ -44,6 +44,7 @@ class ArrayClassGenerator
 
         $items = new Property('items');
         $items->setType('array');
+        $items->setValue([]);
         $items->addComment("@var {$this->itemClassName}[]");
         $class->addMember($items);
 
@@ -58,10 +59,13 @@ class ArrayClassGenerator
         $method->addParameter('item')->setType($namespace->getName().'\\'."$this->itemClassName");
 
         $printer = new PsrPrinter();
-        file_put_contents("{$this->getPath()}/{$this->getWrapperClassName()}.php", $printer->printFile($file));
+        $classPath = "{$this->getPath()}{$this->getWrapperClassName()}.php";
+        file_put_contents($classPath, $printer->printFile($file));
+
+        return $classPath;
     }
 
-    public function generateItemClass()
+    public function generateItemClass(): string
     {
         $file = new PhpFile();
         $file->setStrictTypes();
@@ -81,8 +85,10 @@ class ArrayClassGenerator
         }
 
         $printer = new PsrPrinter();
+        $classPath = "{$this->getPath()}{$this->itemClassName}.php";
+        file_put_contents($classPath, $printer->printFile($file));
 
-        file_put_contents("{$this->getPath()}/{$this->itemClassName}.php", $printer->printFile($file));
+        return $classPath;
     }
 
     private function _addSetter(Property $property, ClassType $classType): void

@@ -4,3 +4,4 @@ parameters:
 		- generate.php
 		- src
 		- tests
+	checkUninitializedProperties: true

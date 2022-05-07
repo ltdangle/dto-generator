@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 class NameSpaceResolver
 {
-    private array $psr4;
+    private array $psr4 = [];
 
     public function addPsr4Mapping(string $namespacePrefix, string $path)
     {

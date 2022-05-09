@@ -8,7 +8,7 @@ A lot of php code is array-heavy, the idea is to use objects for data transfer, 
 
 HOW TO USE?
 ----------
-`$ php generate.php generate:dto-array <path> <className>` - a DTO <className> will be generated at <path>. 
+`$ php generate.php generate:dto-array %path% %className%` - a DTO %className% will be generated at %path%. 
 You will be asked about the properties you want to include in the class.
 
 TODO: 

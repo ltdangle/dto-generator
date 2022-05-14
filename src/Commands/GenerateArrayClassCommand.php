@@ -140,7 +140,6 @@ class GenerateArrayClassCommand extends Command
                 unset($this->arrayProperties[$key]);
             }
         }
-
     }
 
     protected function _displayCollectedProperties(OutputInterface $output)

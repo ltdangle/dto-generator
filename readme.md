@@ -13,4 +13,6 @@ You will be asked about the properties you want to include in the class.
 
 TODO: 
 -----
+- Check that directory exist before writing generated classes
+- Refactor GenerateArrayClassCommand's callback actions to standalone classes
 - Add tests for ArrayClassGenerator (introduce filesystem writer dependency)

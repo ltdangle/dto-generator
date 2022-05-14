@@ -69,7 +69,6 @@ class GenerateArrayClassCommand extends Command
         $helper = $this->getHelper('question');
 
         $this->commands['a']();
-        $this->_displayCollectedProperties($output);
 
         $action = new Question('(A)dd another property, (D)elete property, (G)enerate classes, or (Q)uit? ');
 
@@ -78,13 +77,13 @@ class GenerateArrayClassCommand extends Command
                 break;
             }
 
+            // selected command key does not exist, continue looping
             if (!array_key_exists($answer, $this->commands)) {
                 continue;
             }
 
+            // execute selected command callback
             $this->commands[$answer]();
-
-            $this->_displayCollectedProperties($output);
         }
     }
 
@@ -94,6 +93,7 @@ class GenerateArrayClassCommand extends Command
         $this->classGenerator->setClassProperties($this->arrayProperties);
         $this->classGenerator->setWrapperClassName($this->arrayClassName);
         $generated = $this->classGenerator->writeClasses();
+        $output->writeln('');
         $output->writeln('Generated:');
         $output->writeln("<fg=green>{$generated->getArrayWrapperClassPath()}</>");
         $output->writeln("<fg=green>{$generated->getItemClassPath()}</>");
@@ -120,6 +120,7 @@ class GenerateArrayClassCommand extends Command
 
         // confirm to add new property?
         $output->writeln('');
+        $this->_displayCollectedProperties($output);
     }
 
     protected function deletePropertyDialog(InputInterface $input, OutputInterface $output): void
@@ -140,6 +141,8 @@ class GenerateArrayClassCommand extends Command
                 unset($this->arrayProperties[$key]);
             }
         }
+
+        $this->_displayCollectedProperties($output);
     }
 
     protected function _displayCollectedProperties(OutputInterface $output)

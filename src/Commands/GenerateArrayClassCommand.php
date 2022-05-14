@@ -112,6 +112,7 @@ class GenerateArrayClassCommand extends Command
         $propertyComment = $helper->ask($input, $output, $question);
 
         $property = new Property($propertyName);
+        $property->setVisibility('private');
         $property->setType($propertyType);
         $property->setComment($propertyComment);
 

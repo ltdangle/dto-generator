@@ -43,6 +43,7 @@ class ArrayClassGenerator
         $class->addComment("{$this->wrapperClassName} array-like data structure.");
 
         $items = new Property('items');
+        $items->setVisibility('private');
         $items->setType('array');
         $items->setValue([]);
         $items->addComment("@var {$this->itemClassName}[]");

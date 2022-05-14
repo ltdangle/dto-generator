@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sodalto\DtoGenerator\Service;
 
 use InvalidArgumentException;
+use function Psy\sh;
 
 class NameSpaceResolver
 {
@@ -28,7 +29,7 @@ class NameSpaceResolver
 
         $pathWithoutPrefix = substr($path, strlen($psr4Mapping['path']));
 
-        $namespace = rtrim($psr4Mapping['namespacePrefix'].str_replace('/', '\\', $pathWithoutPrefix), '\\');
+        $namespace = rtrim($psr4Mapping['namespacePrefix'] . str_replace('/', '\\', $pathWithoutPrefix), '\\');
 
         return $namespace;
     }
@@ -58,8 +59,8 @@ class NameSpaceResolver
 
     public static function validatePath(string $path)
     {
-        if (false === strpos($path, '/')) {
-            throw new InvalidArgumentException("Path must have at least one forward slash. I.e. 'src/' ");
+        if ($path[strlen($path) - 1] !== '/') {
+            throw new InvalidArgumentException("Path must have a slash at the end. I.e. 'src/' ");
         }
     }
 }
